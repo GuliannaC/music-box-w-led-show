@@ -1,0 +1,976 @@
+//Final project for EE Lab
+//music box with LED light show
+
+//all different kinds of notes that can be used for a song
+#define NOTE_B0  31
+#define NOTE_C1  33
+#define NOTE_CS1 35
+#define NOTE_D1  37
+#define NOTE_DS1 39
+#define NOTE_E1  41
+#define NOTE_F1  44
+#define NOTE_FS1 46
+#define NOTE_G1  49
+#define NOTE_GS1 52
+#define NOTE_A1  55
+#define NOTE_AS1 58
+#define NOTE_B1  62
+#define NOTE_C2  65
+#define NOTE_CS2 69
+#define NOTE_D2  73
+#define NOTE_DS2 78
+#define NOTE_E2  82
+#define NOTE_F2  87
+#define NOTE_FS2 93
+#define NOTE_G2  98
+#define NOTE_GS2 104
+#define NOTE_A2  110
+#define NOTE_AS2 117
+#define NOTE_B2  123
+#define NOTE_C3  131
+#define NOTE_CS3 139
+#define NOTE_D3  147
+#define NOTE_DS3 156
+#define NOTE_E3  165
+#define NOTE_F3  175
+#define NOTE_FS3 185
+#define NOTE_G3  196
+#define NOTE_GS3 208
+#define NOTE_A3  220
+#define NOTE_AS3 233
+#define NOTE_B3  247
+#define NOTE_C4  262
+#define NOTE_CS4 277
+#define NOTE_D4  294
+#define NOTE_DS4 311
+#define NOTE_E4  330
+#define NOTE_F4  349
+#define NOTE_FS4 370
+#define NOTE_G4  392
+#define NOTE_GS4 415
+#define NOTE_A4  440
+#define NOTE_AS4 466
+#define NOTE_B4  494
+#define NOTE_C5  523
+#define NOTE_CS5 554
+#define NOTE_D5  587
+#define NOTE_DS5 622
+#define NOTE_E5  659
+#define NOTE_F5  698
+#define NOTE_FS5 740
+#define NOTE_G5  784
+#define NOTE_GS5 831
+#define NOTE_A5  880
+#define NOTE_AS5 932
+#define NOTE_B5  988
+#define NOTE_C6  1047
+#define NOTE_CS6 1109
+#define NOTE_D6  1175
+#define NOTE_DS6 1245
+#define NOTE_E6  1319
+#define NOTE_F6  1397
+#define NOTE_FS6 1480
+#define NOTE_G6  1568
+#define NOTE_GS6 1661
+#define NOTE_A6  1760
+#define NOTE_AS6 1865
+#define NOTE_B6  1976
+#define NOTE_C7  2093
+#define NOTE_CS7 2217
+#define NOTE_D7  2349
+#define NOTE_DS7 2489
+#define NOTE_E7  2637
+#define NOTE_F7  2794
+#define NOTE_FS7 2960
+#define NOTE_G7  3136
+#define NOTE_GS7 3322
+#define NOTE_A7  3520
+#define NOTE_AS7 3729
+#define NOTE_B7  3951
+#define NOTE_C8  4186
+#define NOTE_CS8 4435
+#define NOTE_D8  4699
+#define NOTE_DS8 4978
+#define REST 0
+
+//library that contains different notes
+#include "pitches.h"
+
+// Two things need to be created: the array for the notes of the melody (in order)
+// and the duration of each (think of it like sheet music in two parts)
+
+//notes for starwars theme 
+int starwars[] = {
+   NOTE_AS4, NOTE_AS4, NOTE_AS4,//1
+  NOTE_F5, NOTE_C6,
+  NOTE_AS5, NOTE_A5, NOTE_G5, NOTE_F6, NOTE_C6,  
+  NOTE_AS5, NOTE_A5, NOTE_G5, NOTE_F6, NOTE_C6,  
+  NOTE_AS5, NOTE_A5, NOTE_AS5, NOTE_G5, NOTE_C5, NOTE_C5, NOTE_C5,
+  NOTE_F5, NOTE_C6,
+  NOTE_AS5, NOTE_A5, NOTE_G5, NOTE_F6, NOTE_C6,  
+  
+  NOTE_AS5, NOTE_A5, NOTE_G5, NOTE_F6, NOTE_C6, //8  
+  NOTE_AS5, NOTE_A5, NOTE_AS5, NOTE_G5, NOTE_C5, NOTE_C5, 
+  NOTE_D5, NOTE_D5, NOTE_AS5, NOTE_A5, NOTE_G5, NOTE_F5,
+  NOTE_F5, NOTE_G5, NOTE_A5, NOTE_G5, NOTE_D5, NOTE_E5,NOTE_C5, NOTE_C5,
+  NOTE_D5, NOTE_D5, NOTE_AS5, NOTE_A5, NOTE_G5, NOTE_F5,
+  
+  NOTE_C6, NOTE_G5, NOTE_G5, REST, NOTE_C5,//13
+  NOTE_D5, NOTE_D5, NOTE_AS5, NOTE_A5, NOTE_G5, NOTE_F5,
+  NOTE_F5, NOTE_G5, NOTE_A5, NOTE_G5, NOTE_D5,NOTE_E5,NOTE_C6, NOTE_C6,
+  NOTE_F6, NOTE_DS6, NOTE_CS6, NOTE_C6, NOTE_AS5, NOTE_GS5,NOTE_G5, NOTE_F5,
+  
+};
+
+//tempo for starwars theme
+int startemp [] = {
+  8,8,8,
+  2,2,
+  8,8,8,2,4,
+  8,8,8,2,4,
+  8,8,8,2,8,8,8,
+  2,2,
+  8,8,8,2,4,
+
+  8,8,8,2,4,
+  8,8,8,2,8,16,
+  4,8,8,8,8,8,
+  8,8,8,4,8,4,8,16,
+  4,8,8,8,8,8,
+
+  8,16,2,8,8,
+  4,8,8,8,8,8,
+  8,8,8,4,8,4,8,16,
+  4,8,4,8,4,8,4,8,
+  1
+};
+
+// The melody array for take on me
+int melody[] = {
+  NOTE_FS5, NOTE_FS5, NOTE_D5, NOTE_B4, NOTE_B4, NOTE_E5, 
+  NOTE_E5, NOTE_E5, NOTE_GS5, NOTE_GS5, NOTE_A5, NOTE_B5, 
+  NOTE_A5, NOTE_A5, NOTE_A5, NOTE_E5, NOTE_D5, NOTE_FS5, 
+  NOTE_FS5, NOTE_FS5, NOTE_E5, NOTE_E5, NOTE_FS5, NOTE_E5
+};
+
+// The note duration, 8 = 8th note, 4 = quarter note, etc.
+//tempo for take on me song
+int durations[] = {
+  8, 8, 8, 4, 4, 4, 
+  4, 5, 8, 8, 8, 8, 
+  8, 8, 8, 4, 4, 4, 
+  4, 5, 8, 8, 8, 8
+};
+
+//notes for mario theme
+int mario[] = {
+   NOTE_E5, NOTE_E5, REST, NOTE_E5, REST, NOTE_C5, NOTE_E5, //1
+  NOTE_G5, REST, NOTE_G4, REST, 
+  NOTE_C5, NOTE_G4, REST, NOTE_E4, // 3
+  NOTE_A4, NOTE_B4, NOTE_AS4, NOTE_A4,
+  NOTE_G4, NOTE_E5, NOTE_G5, NOTE_A5, NOTE_F5,NOTE_G5,
+  REST, NOTE_E5,NOTE_C5, NOTE_D5, NOTE_B4,
+  NOTE_C5, NOTE_G4, REST, NOTE_E4, // repeats from 3
+  NOTE_A4, NOTE_B4, NOTE_AS4, NOTE_A4,
+  NOTE_G4, NOTE_E5, NOTE_G5, NOTE_A5, NOTE_F5,NOTE_G5,
+  REST, NOTE_E5,NOTE_C5, NOTE_D5, NOTE_B4,
+ 
+  REST, NOTE_G5, NOTE_FS5, NOTE_F5, NOTE_DS5, NOTE_E5,//7
+  REST, NOTE_GS4, NOTE_A4, NOTE_C4, REST, NOTE_A4, NOTE_C5, NOTE_D5,
+  REST, NOTE_DS5, REST, NOTE_D5,
+  NOTE_C5, REST,
+
+  REST, NOTE_G5, NOTE_FS5, NOTE_F5, NOTE_DS5, NOTE_E5,//repeats from 7
+  REST, NOTE_GS4, NOTE_A4, NOTE_C4, REST, NOTE_A4, NOTE_C5, NOTE_D5,
+  REST, NOTE_DS5, REST, NOTE_D5,
+  NOTE_C5, REST,
+
+  NOTE_C5, NOTE_C5, NOTE_C5, REST, NOTE_C5, NOTE_D5,//11
+  NOTE_E5, NOTE_C5, NOTE_A4, NOTE_G4,
+
+  NOTE_C5, NOTE_C5, NOTE_C5, REST, NOTE_C5, NOTE_D5, NOTE_E5,//13
+  REST, 
+  NOTE_C5, NOTE_C5, NOTE_C5, REST, NOTE_C5, NOTE_D5,
+  NOTE_E5, NOTE_C5, NOTE_A4, NOTE_G4,
+  NOTE_E5, NOTE_E5, REST, NOTE_E5, REST, NOTE_C5, NOTE_E5,
+  NOTE_G5, REST, NOTE_G4, REST, 
+  NOTE_C5, NOTE_G4, REST, NOTE_E4, // 19
+  
+  NOTE_A4, NOTE_B4, NOTE_AS4, NOTE_A4,
+  NOTE_G4, NOTE_E5, NOTE_G5, NOTE_A5, NOTE_F5, NOTE_G5,
+  REST, NOTE_E5, NOTE_C5, NOTE_D5, NOTE_B4,
+
+  NOTE_C5, NOTE_G4, REST, NOTE_E4, // repeats from 19
+  NOTE_A4, NOTE_B4, NOTE_AS4, NOTE_A4,
+  NOTE_G4, NOTE_E5, NOTE_G5, NOTE_A5, NOTE_F5, NOTE_G5,
+  REST, NOTE_E5, NOTE_C5, NOTE_D5, NOTE_B4,
+
+  NOTE_E5, NOTE_C5, NOTE_G4, REST, NOTE_GS4,//23
+  NOTE_A4, NOTE_F5, NOTE_F5, NOTE_A4,
+  NOTE_D5, NOTE_A5, NOTE_A5, NOTE_A5, NOTE_G5, NOTE_F5,
+  
+  NOTE_E5, NOTE_C5, NOTE_A4, NOTE_G4, //26
+  NOTE_E5, NOTE_C5, NOTE_G4, REST, NOTE_GS4,
+  NOTE_A4, NOTE_F5, NOTE_F5,NOTE_A4,
+  NOTE_B4, NOTE_F5, NOTE_F5, NOTE_F5, NOTE_E5, NOTE_D5,
+  NOTE_C5,NOTE_E4, NOTE_E4, NOTE_C4,
+
+  NOTE_E5, NOTE_C5, NOTE_G4, REST, NOTE_GS4,//repeats from 23
+  NOTE_A4, NOTE_F5, NOTE_F5, NOTE_A4,
+  NOTE_D5, NOTE_A5, NOTE_A5, NOTE_A5, NOTE_G5, NOTE_F5,
+  
+  NOTE_E5, NOTE_C5, NOTE_A4, NOTE_G4, //26
+  NOTE_E5, NOTE_C5, NOTE_G4, REST, NOTE_GS4,
+  NOTE_A4, NOTE_F5, NOTE_F5, NOTE_A4,
+  NOTE_B4, NOTE_F5, NOTE_F5, NOTE_F5, NOTE_E5, NOTE_D5,
+  NOTE_C5, NOTE_E4, NOTE_E4, NOTE_C4,
+  NOTE_C5, NOTE_C5, NOTE_C5, REST, NOTE_C5, NOTE_D5, NOTE_E5,
+  REST,
+
+  NOTE_C5, NOTE_C5, NOTE_C5, REST, NOTE_C5, NOTE_D5,//27
+  NOTE_E5, NOTE_C5, NOTE_A4, NOTE_G4,
+  NOTE_E5, NOTE_E5, REST, NOTE_E5, REST, NOTE_C5, NOTE_E5,
+  NOTE_G5, REST, NOTE_G4, REST,
+  NOTE_E5, NOTE_C5, NOTE_G4, REST, NOTE_GS4,
+  NOTE_A4, NOTE_F5, NOTE_F5, NOTE_A4,
+  NOTE_D5, NOTE_A5, NOTE_A5, NOTE_A5, NOTE_G5, NOTE_F5,
+  
+  NOTE_E5, NOTE_C5, NOTE_A4,NOTE_G4, //28
+  NOTE_E5, NOTE_C5, NOTE_G4, REST, NOTE_GS4,
+  NOTE_A4, NOTE_F5, NOTE_F5, NOTE_A4,
+  NOTE_B4, NOTE_F5, NOTE_F5, NOTE_F5, NOTE_E5, NOTE_D5,
+  NOTE_C5, NOTE_E4, NOTE_E4, NOTE_C4,
+  
+  //game over sound
+  NOTE_C5, NOTE_G4, NOTE_E4, 
+  NOTE_A4, NOTE_B4, NOTE_A4, NOTE_GS4, NOTE_AS4, NOTE_GS4,
+  NOTE_G4, NOTE_D4, NOTE_E4, 
+};
+//Mario main theme tempo
+int mariotemp[] = {
+ 8,8,8,8,8,8,8,
+ 4,4,8,4,
+ 4,8,4,4,
+ 4,4,8,4,
+ 8,8,8,4,8,8,
+ 8,4,8,8,4,
+ 4,8,4,4,
+ 4,4,8,4,
+ 8,8,8,4,8,8,
+ 8,4,8,8,4,
+ 4,8,8,8,4,8,
+ 8,8,8,8,8,8,8,8,
+ 4,4,8,4,
+ 2,2,
+ 8,4,8,8,8,4,
+ 8,4,8,2,
+ 8,4,8,8,8,8,8,
+ 1,
+ 8,4,8,8,8,4,
+ 8,4,8,2,
+ 8,8,8,8,8,8,4,
+ 4,4,4,4,
+ 4,8,4,4,
+ 4,4,8,4,
+ 8,8,8,4,8,8,
+ 8,4,8,8,4,
+ 4,8,4,4,
+ 4,4,8,4,
+ 8,8,8,4,8,8,
+ 8,4,8,8,4,
+ 8,4,8,4,4,
+ 8,4,8,2,
+ 8,8,8,8,8,8,
+ 8,4,8,2,
+ 8,4,8,4,4,
+ 8,4,8,2,
+ 8,4,8,8,8,8,
+ 8,4,8,2,
+ 8,4,8,4,4,
+ 8,4,8,2,
+ 8,8,8,8,8,8,
+ 8,4,8,2,
+ 8,4,8,4,4,
+ 8,4,8,2,
+ 8,4,8,8,8,8,
+ 8,4,8,2,
+ 8,4,8,8,8,8,8,
+ 1,
+ 8,4,8,8,8,4,
+ 8,4,8,2,
+ 8,8,8,8,8,8,4,
+ 4,4,4,4,
+ 8,4,8,4,4,
+ 8,4,8,2,
+ 8,8,8,8,8,8,
+ 8,4,8,2,
+ 8,4,8,4,4,
+ 8,4,8,2,
+ 8,4,8,8,8,8,
+ 8,4,8,2,
+ 4,4,4,
+ 8,8,8,8,8,8,
+ 8,8,2
+};
+
+//notes for Cantina band from starwars 
+int cantina[] = {
+  // Cantina BAnd - Star wars 
+  NOTE_B4, NOTE_E5, NOTE_B4, NOTE_E5, 
+  NOTE_B4,  NOTE_E5, NOTE_B4, REST,  NOTE_AS4, NOTE_B4, 
+  NOTE_B4,  NOTE_AS4, NOTE_B4, NOTE_A4, REST, NOTE_GS4, NOTE_A4, NOTE_G4,
+  NOTE_G4,  NOTE_E4, 
+  NOTE_B4, NOTE_E5, NOTE_B4, NOTE_E5, 
+  NOTE_B4,  NOTE_E5, NOTE_B4, REST,  NOTE_AS4, NOTE_B4,
+
+  NOTE_A4, NOTE_A4, NOTE_GS4, NOTE_A4,
+  NOTE_D5,  NOTE_C5, NOTE_B4, NOTE_A4,
+  NOTE_B4, NOTE_E5, NOTE_B4, NOTE_E5,
+  NOTE_B4,  NOTE_E5, NOTE_B4, REST,  NOTE_AS4, NOTE_B4,
+  NOTE_D5, NOTE_D5, NOTE_B4, NOTE_A4,
+  NOTE_G4, NOTE_E4,
+  NOTE_E4,  NOTE_G4,
+  NOTE_B4,  NOTE_D5,
+
+  NOTE_F5,  NOTE_E5, NOTE_AS4, NOTE_AS4, NOTE_B4, NOTE_G4 
+};
+
+//tempo for cantina band from starwars
+int cantemp[] = {
+  4,4,4,4,
+  8,4,8,8,8,8,
+  8,8,8,8,8,8,8,8,
+  4,2,
+  8,4,8,8,8,8,
+  4,4,8,4,
+  8,4,4,4,
+  4,4,4,4,
+  8,4,8,8,8,8,
+  4,4,8,4,
+  4,2,
+  2,2,
+  2,2,
+  4,4,8,8,4,4,
+};
+
+//notes for harry potter song
+int HarryPotter[] = {
+   REST,  NOTE_D4, 
+  NOTE_G4,  NOTE_AS4,  NOTE_A4, 
+  NOTE_G4,  NOTE_D5, 
+  NOTE_C5,  
+  NOTE_A4, 
+  NOTE_G4,  NOTE_AS4, NOTE_A4, 
+  NOTE_F4,  NOTE_GS4, 
+  NOTE_D4,  
+  NOTE_D4, 
+
+  NOTE_G4,  NOTE_AS4, NOTE_A4,  //10
+  NOTE_G4,  NOTE_D5, 
+  NOTE_F5,  NOTE_E5, 
+  NOTE_DS5,  NOTE_B4, 
+  NOTE_DS5,  NOTE_D5,  NOTE_CS5, 
+  NOTE_CS4,  NOTE_B4, 
+  NOTE_G4, 
+  NOTE_AS4, 
+     
+  NOTE_D5,  NOTE_AS4, //18
+  NOTE_D5,  NOTE_AS4, 
+  NOTE_DS5,  NOTE_D5, 
+  NOTE_CS5,  NOTE_A4, 
+  NOTE_AS4,  NOTE_D5,  NOTE_CS5, 
+  NOTE_CS4,  NOTE_D4, 
+  NOTE_D5,  
+  REST, NOTE_AS4,  
+
+  NOTE_D5,  NOTE_AS4, //26
+  NOTE_D5,  NOTE_AS4, 
+  NOTE_F5,  NOTE_E5, 
+  NOTE_DS5,  NOTE_B4,
+  NOTE_DS5,  NOTE_D5,  NOTE_CS5,
+  NOTE_CS4,  NOTE_AS4, 
+  NOTE_G4, 
+};
+
+//tempo for harry potter song
+int harrytemp [] = {
+  2,4,
+  4,8,4,
+  2,4,
+  2,
+  2,
+  4,8,4,
+  2,4,
+  1,
+  4,
+  4,8,4,
+  2,4,
+  2,4,
+  2,4,
+  4,8,4,
+  2,4,
+  1,
+  4,
+  2,4,
+  2,4,
+  2,4,
+  2,4,
+  4,8,4,
+  2,4,
+  1,
+  4,4,
+  2,4,2,4,2,4,2,4,
+  4,8,4,
+  2,4,
+  1,
+};
+
+//notes for mii theme song
+int miitheme[] = {
+   NOTE_FS4, REST, NOTE_A4,NOTE_CS5, REST,NOTE_A4, REST, NOTE_FS4, 
+  NOTE_D4, NOTE_D4, NOTE_D4, REST, REST, REST, NOTE_CS4,
+  NOTE_D4, NOTE_FS4, NOTE_A4, NOTE_CS5, REST, NOTE_A4, REST, NOTE_F4,
+  NOTE_E5,NOTE_DS5, NOTE_D5, REST, REST,
+  
+  NOTE_GS4, REST, NOTE_CS5, NOTE_FS4,REST,NOTE_CS5, REST,NOTE_GS4,
+  REST, NOTE_CS5, NOTE_G4, NOTE_FS4, REST, NOTE_E4, REST,
+  NOTE_E4, NOTE_E4, NOTE_E4, REST, REST, NOTE_E4, NOTE_E4,
+  NOTE_E4, REST,REST, NOTE_DS4, NOTE_D4,
+
+  NOTE_CS4, REST, NOTE_A4,NOTE_CS5, REST,NOTE_A4, REST, NOTE_FS4, 
+  NOTE_D4, NOTE_D4, NOTE_D4, REST, NOTE_E5, NOTE_E5, NOTE_E5, REST,
+  REST, NOTE_FS4,NOTE_A4,NOTE_CS5, REST, NOTE_A4,REST, NOTE_F4,
+  NOTE_E5, NOTE_D5, REST, REST,
+
+  NOTE_B4, NOTE_G4, NOTE_D4, NOTE_CS4, NOTE_B4, NOTE_G4, NOTE_CS4,
+  NOTE_A4, NOTE_FS4, NOTE_C4,NOTE_B3, NOTE_F4, NOTE_D4, NOTE_B3,
+  NOTE_E4, NOTE_E4, NOTE_E4,REST,REST,NOTE_AS4,
+  NOTE_CS5,NOTE_D5, NOTE_FS5, NOTE_A5, REST, REST,
+
+  REST, NOTE_A3, NOTE_AS3,  
+  NOTE_A3, NOTE_A3, NOTE_A3,
+  REST, NOTE_A3,NOTE_AS3, NOTE_A3, NOTE_F4, NOTE_C4,
+  NOTE_A3, NOTE_A3, NOTE_A3,
+
+  REST, NOTE_B3, NOTE_C4,
+  NOTE_CS4, NOTE_C4,NOTE_CS4,
+  REST,NOTE_CS4, NOTE_C4, NOTE_CS4,NOTE_GS4,NOTE_DS4,
+  NOTE_CS4,NOTE_DS4, NOTE_B3,
+  
+  NOTE_E4, NOTE_E4, NOTE_E4, REST
+};
+
+//tempo for mii theme song
+int miitemp [] = {
+  8,8,8,8,8,8,8,8,
+  8,8,8,8,4,8,8,
+  8,8,8,8,8,8,8,8,
+  4,8,8,8,4,
+  8,8,8,8,8,8,8,8,
+  8,8,8,8,8,8,8,
+  8,8,8,8,4,8,8,
+  8,8,4,8,8,
+  8,8,8,8,8,8,8,8,
+  8,8,8,8,8,8,8,8,
+  8,8,8,8,8,8,8,8,
+  2,8,8,4,
+  8,8,8,4,8,8,8,
+  8,8,8,4,8,8,8,
+  8,8,8,4,4,4,
+  8,8,8,8,8,4,
+  2,4,2,
+  4,8,2,
+  4,8,8,8,4,8,
+  4,8,2,
+  2,4,4,
+  4,8,2,
+  4,8,8,8,4,8,
+  4,8,1,
+  4,4,4,8
+};
+
+//notes for pink panther theme song
+int pinkpan [] = {
+   REST, REST, REST, NOTE_DS4, 
+  NOTE_E4, REST, NOTE_FS4, NOTE_G4, REST, NOTE_DS4, 
+  NOTE_E4, NOTE_FS4,  NOTE_G4, NOTE_C5, NOTE_B4, NOTE_E4, NOTE_G4,NOTE_B4,   
+  NOTE_AS4, NOTE_A4, NOTE_G4, NOTE_E4,NOTE_D4,
+  NOTE_E4, REST, REST, NOTE_DS4,
+
+  NOTE_E4, REST, NOTE_FS4, NOTE_G4, REST, NOTE_DS4,
+  NOTE_E4, NOTE_FS4,  NOTE_G4, NOTE_C5, NOTE_B4, NOTE_G4, NOTE_B4, NOTE_E5,
+  NOTE_DS5,   
+  NOTE_D5, REST, REST, NOTE_DS4, 
+  NOTE_E4, REST, NOTE_FS4, NOTE_G4, REST, NOTE_DS4,
+  NOTE_E4, NOTE_FS4,  NOTE_G4, NOTE_C5, NOTE_B4, NOTE_E4, NOTE_G4, NOTE_B4,   
+  
+  NOTE_AS4, NOTE_A4, NOTE_G4, NOTE_E4, NOTE_D4, 
+  NOTE_E4, REST,
+  REST, NOTE_E5, NOTE_D5, NOTE_B4, NOTE_A4, NOTE_G4, NOTE_E4,
+  NOTE_AS4, NOTE_A4, NOTE_AS4, NOTE_A4, NOTE_AS4, NOTE_A4, NOTE_AS4, NOTE_A4,  
+  NOTE_G4, NOTE_E4, NOTE_D4, NOTE_E4, NOTE_E4, NOTE_E4
+};
+
+//tempo for pink panther theme song
+int pinktemp [] = {
+  2,4,8,8,
+  4,8,8,4,8,8,
+  8,8,8,8,8,8,8,8,
+  2,16,16,16,16,
+  2,4,8,4,
+  4,8,8,4,8,8,
+  8,8,8,8,8,8,8,8,
+  1,
+  2,4,8,8,
+  4,8,8,4,8,8,
+  8,8,8,8,8,8,8,8,
+  2,16,16,16,16,
+  4,4,
+  4,8,8,8,8,8,8,
+  16,8,16,8,16,8,16,8,
+  16,16,16,16,16,2
+};
+
+//notes for in the jungle song
+int jungle [] = {
+  NOTE_F4,  NOTE_G4,  NOTE_A4,  NOTE_G4,  NOTE_A4,  //1
+  NOTE_AS4,  NOTE_A4,  NOTE_G4, NOTE_F4,  NOTE_G4, 
+  NOTE_A4,  NOTE_C4,  NOTE_C4, NOTE_C4,  NOTE_C4, 
+  NOTE_C4,  //1st ending
+
+  NOTE_F4, NOTE_G4,  NOTE_A4,  NOTE_G4, NOTE_A4, //repeats from 1
+  NOTE_AS4, NOTE_A4, NOTE_G4,  NOTE_F4, NOTE_G4, 
+  NOTE_A4, NOTE_C4,  NOTE_C4,  NOTE_C4,  NOTE_C4, 
+  NOTE_C4,   REST,  NOTE_A4,  //2nd ending
+
+  NOTE_A4,  NOTE_A4, NOTE_A4,  NOTE_A4,  NOTE_A4,  NOTE_A4,  NOTE_A4,  NOTE_A4,  //6
+  NOTE_AS4,  NOTE_AS4,  NOTE_AS4,  NOTE_AS4,  NOTE_AS4,  NOTE_AS4,  NOTE_AS4,  NOTE_AS4,
+  NOTE_A4,  NOTE_A4,  NOTE_A4,  NOTE_A4,  NOTE_A4,  NOTE_A4, NOTE_A4, NOTE_A4, 
+  NOTE_G4,  NOTE_G4,  NOTE_G4,  NOTE_G4,  NOTE_G4,  NOTE_G4,  NOTE_G4, NOTE_G4, 
+
+  NOTE_A4, NOTE_A4,  NOTE_A4,  NOTE_A4,  NOTE_A4,  NOTE_A4,  NOTE_A4,  NOTE_A4, //10
+  NOTE_AS4,  NOTE_AS4,  NOTE_AS4,  NOTE_AS4,  NOTE_AS4,  NOTE_AS4,  NOTE_AS4,  NOTE_AS4, 
+  NOTE_A4,  NOTE_A4, NOTE_A4,  NOTE_A4,  NOTE_A4,  NOTE_A4,  NOTE_A4,  NOTE_A4, 
+  NOTE_G4,  NOTE_G4, NOTE_G4,  NOTE_G4,  NOTE_G4,  NOTE_G4,  NOTE_G4,  NOTE_G4, 
+
+  NOTE_F4,  NOTE_G4,  NOTE_A4,  NOTE_G4,  NOTE_A4,  //14
+  NOTE_AS4,  NOTE_A4,  NOTE_G4,  NOTE_F4,  NOTE_G4, 
+  NOTE_A4,  NOTE_G4, NOTE_F4,  NOTE_A4, 
+  NOTE_G4, 
+  NOTE_C5, NOTE_A4,  NOTE_G4,  NOTE_A4,  NOTE_C5, 
+  NOTE_AS4,  NOTE_A4,  NOTE_G4,  NOTE_F4,  NOTE_G4, 
+  NOTE_A4,  NOTE_G4,  NOTE_F4,  NOTE_A4, 
+  NOTE_G4, 
+
+  NOTE_C5,  //22
+  NOTE_C5,  NOTE_AS4,  NOTE_C5,  NOTE_AS4, 
+  NOTE_A4,  NOTE_C4,  NOTE_C4,  NOTE_C4,  NOTE_C4, 
+  NOTE_C4, 
+
+  REST,  NOTE_A4, NOTE_G4,  NOTE_F4, NOTE_E4,  NOTE_D4,  NOTE_C4,  
+  NOTE_D4, 
+  REST, NOTE_A4,  NOTE_G4,  NOTE_F4,  NOTE_E4,  NOTE_D4,  NOTE_C4, 
+  NOTE_D4, 
+
+  NOTE_F4,  NOTE_G4,  NOTE_A4,  NOTE_G4,  NOTE_A4, //repeats from 14
+  NOTE_AS4,  NOTE_A4,  NOTE_G4,  NOTE_F4,  NOTE_G4, 
+  NOTE_A4,  NOTE_G4, NOTE_F4,  NOTE_A4, 
+  NOTE_G4, 
+  NOTE_C5,  NOTE_A4, NOTE_G4,  NOTE_A4,  NOTE_C5, 
+  NOTE_AS4,  NOTE_A4,  NOTE_G4,  NOTE_F4,  NOTE_G4, 
+  NOTE_A4, NOTE_G4,  NOTE_F4,  NOTE_A4, 
+  NOTE_G4, 
+
+  NOTE_C5,  //22
+  NOTE_C5,  NOTE_AS4,  NOTE_C5,  NOTE_AS4, 
+  NOTE_A4,  NOTE_C4,  NOTE_C4,  NOTE_C4,  NOTE_C4, 
+  NOTE_C4, 
+
+  REST,  NOTE_A4,  NOTE_G4,  NOTE_F4,  NOTE_E4,  NOTE_D4, NOTE_C4, 
+  NOTE_D4, 
+  REST,  NOTE_A4,  NOTE_G4,  NOTE_F4,  NOTE_E4,  NOTE_D4, NOTE_C4, 
+  NOTE_D4,
+
+  NOTE_F4,  NOTE_G4,  NOTE_A4,  NOTE_G4,  NOTE_A4,  //30
+  NOTE_AS4,  NOTE_A4,  NOTE_G4,  NOTE_F4,  NOTE_G4, 
+  NOTE_A4,  NOTE_C4,  NOTE_C4,  NOTE_C4,  NOTE_C4,
+  NOTE_C4, 
+
+  NOTE_F4,  NOTE_G4,  NOTE_A4,  NOTE_G4,  NOTE_A4,  //repeats from 14 (again)
+  NOTE_AS4,  NOTE_A4,  NOTE_G4,  NOTE_F4,  NOTE_G4, 
+  NOTE_A4,  NOTE_G4,  NOTE_F4, NOTE_A4, 
+  NOTE_G4, 
+  NOTE_C5,  NOTE_A4,  NOTE_G4,  NOTE_A4, NOTE_C5, 
+  NOTE_AS4, NOTE_A4,  NOTE_G4,  NOTE_F4,  NOTE_G4, 
+  NOTE_A4,  NOTE_G4,  NOTE_F4,  NOTE_A4, 
+  NOTE_G4, 
+
+  NOTE_C5,  //22
+  NOTE_C5,  NOTE_AS4,  NOTE_C5,  NOTE_AS4, 
+  NOTE_A4,  NOTE_C4,  NOTE_C4,  NOTE_C4,  NOTE_C4, 
+  NOTE_C4, 
+
+  REST,  NOTE_A4,  NOTE_G4,  NOTE_F4,  NOTE_E4, NOTE_D4,  NOTE_C4,  
+  NOTE_D4, 
+  REST,  NOTE_A4,  NOTE_G4,  NOTE_F4,  NOTE_E4,  NOTE_D4,  NOTE_C4,  
+  NOTE_D4, 
+
+  NOTE_F4,  NOTE_G4,  NOTE_A4,  NOTE_G4,  NOTE_A4,  //30
+  NOTE_AS4,  NOTE_A4,  NOTE_G4,  NOTE_F4,  NOTE_G4, 
+  NOTE_A4,  NOTE_C4,  NOTE_C4,  NOTE_C4,  NOTE_C4, 
+  NOTE_C4 
+};
+
+//tempo for in the jungle song
+int jungletemp[] = {
+  4,4,8,4,8,
+  4,4,8,4,8,
+  4,8,4,8,4,
+  1,
+  4,4,8,4,8,
+  4,4,8,4,8,
+  4,8,4,8,4,
+  2,8,16,
+  8,16,8,16,8,16,8,16,
+  8,16,8,16,8,16,8,16,
+  8,16,8,16,8,16,8,16,
+  8,16,8,16,8,16,8,16,
+  8,16,8,16,8,16,8,16,
+  8,16,8,16,8,16,8,16,
+  8,16,8,16,8,16,8,16,
+  8,16,8,16,8,16,8,16,
+  4,4,8,4,8,
+  4,4,8,4,8,
+  4,4,4,4,
+  1,
+  4,4,8,4,8,
+  4,4,8,4,8,
+  4,4,4,4,
+  1,
+  1,
+  4,8,8,2,
+  4,8,4,8,4,
+  1,
+  4,8,8,8,8,8,8,
+  1,
+  4,8,8,8,8,8,8,
+  1,
+  4,4,8,4,8,
+  4,4,8,4,8,
+  4,4,4,4,
+  1,
+  4,4,8,4,8,
+  4,4,8,4,8,
+  4,4,4,4,
+  1,
+  1,
+  4,8,8,2,
+  4,8,4,8,4,
+  1,
+  4,8,8,8,8,8,8,
+  1,
+  4,8,8,8,8,8,8,
+  1,
+  4,4,8,4,8,
+  4,4,8,4,8,
+  4,8,4,8,4,
+  1,
+  4,4,8,4,8,
+  4,4,8,4,8,
+  4,4,4,4,
+  1,
+  4,4,8,4,8,
+  4,4,8,4,8,
+  4,4,4,4,
+  1,
+  1,
+  4,8,8,2,
+  4,8,4,8,4,
+  1,
+  4,8,8,8,8,8,8,
+  1,
+  4,8,8,8,8,8,8,
+  1,
+  4,4,8,4,8,
+  4,4,8,4,8,
+  4,8,4,8,4,
+  1
+};
+
+//notes for pacman theme
+int pacman[] = {
+   NOTE_B4, NOTE_B5,  NOTE_FS5,  NOTE_DS5,  //1
+  NOTE_B5,  NOTE_FS5, NOTE_DS5, NOTE_C5, 
+  NOTE_C6,  NOTE_G6,  NOTE_E6, NOTE_C6,  NOTE_G6,  NOTE_E6,
+
+  NOTE_B4,   NOTE_B5,   NOTE_FS5,   NOTE_DS5,   NOTE_B5,   //2
+  NOTE_FS5,  NOTE_DS5,  NOTE_DS5,  NOTE_E5,   NOTE_F5, 
+  NOTE_F5,  NOTE_FS5,   NOTE_G5,   NOTE_G5,  NOTE_GS5,   NOTE_A5,  NOTE_B5
+};
+
+//tempo for pacman theme
+int pactemp [] = {
+  16,16,16,16,
+  32,16,8,16,
+  16,16,16,32,16,8,
+  16,16,16,16,32,
+  16,8,32,32,32,
+  32,32,32,32,32,16,8
+};
+
+// determine the length of the arrays to use in the loop iteration
+int songLength = sizeof(melody)/sizeof(melody[0]); //take on me array
+int msongLength = sizeof(mario)/sizeof(mario[0]); //mario array
+int ssongLength = sizeof(starwars)/sizeof(starwars[0]); //starwars array
+int csongLength = sizeof(cantina)/ sizeof(cantina[0]); //cantina array
+int hsongLength = sizeof(HarryPotter)/sizeof(HarryPotter[0]); //harry potter array
+int misongLength = sizeof(miitheme)/sizeof(miitheme[0]); //mii theme array
+int psongLength = sizeof(pinkpan)/sizeof(pinkpan[0]); //pink panther array
+int jsongLength = sizeof(jungle)/sizeof(jungle[0]); //in the jungle array
+int pacsongLength = sizeof(pacman)/sizeof(pacman[0]); //pacman theme
+
+//library for remote to work
+#include <IRremote.h>
+
+//set up pins for remote
+const int RECV_PIN = 7;
+IRrecv irrecv(RECV_PIN);
+decode_results results;
+const int redPin = 10;
+const int greenPin = 11;
+const int bluePin = 9;
+const int beeper = 8;
+
+//set up pins for interupt
+#define button1Pin 2
+#define led1Pin 3
+#define led2Pin 4
+#define led3Pin 5
+#define led4Pin 6
+int onoff=0;//0 lights are off 1 light are on
+volatile byte state = HIGH;
+
+void setup() {
+  //set up for remote
+  //outputs created for everything needing power
+   irrecv.enableIRIn();
+  irrecv.blink13(true);
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+  pinMode(beeper, OUTPUT);
+
+  //set up for interupt
+  //outputs created everything needing power
+  pinMode(led1Pin, OUTPUT);
+  pinMode(led2Pin, OUTPUT);
+  pinMode(led3Pin, OUTPUT);
+  pinMode(led4Pin, OUTPUT);
+  pinMode(button1Pin, INPUT_PULLUP);
+  Serial.begin(115200);
+  attachInterrupt(digitalPinToInterrupt(button1Pin), blink1, CHANGE);
+}
+
+//void created for interupt 
+void blink1() {
+  state = !state;
+}
+
+void loop() {
+
+        //loop to make LEDS go and interupt work
+  if (state == LOW) {//using the state variable that gets changed in the interrupt function instead of a digitalRead()
+    // turn LEDS on:
+    Serial.println("on");
+    digitalWrite(led1Pin, HIGH); 
+    digitalWrite(led2Pin, HIGH);
+    digitalWrite(led3Pin, HIGH);  
+    digitalWrite(led4Pin, HIGH);
+    onoff=1; 
+  } else if(state == HIGH) {//using the state variable that gets changed in the interrupt function instead of a digitalRead()
+    // turn LEDs off:
+    if(onoff==1){
+      digitalWrite(led1Pin, LOW);
+      digitalWrite(led2Pin, LOW);
+      digitalWrite(led3Pin, LOW);
+      digitalWrite(led4Pin, LOW);
+      onoff=0; 
+      
+    }
+    
+    //walkning LED
+     digitalWrite(led1Pin, HIGH);   // turn the LED on (HIGH is the voltage level)
+      delay(1000);  // wait for a second
+      if(state==LOW)return; //returns back to the top of the main loop
+        digitalWrite(led1Pin, LOW);    // turn the LED off by making the voltage LOW
+        digitalWrite(led2Pin, HIGH);   // turn the LED on (HIGH is the voltage level)
+      delay(1000);       // wait for a second
+         if(state==LOW)return; //returns back to the top of the main loop
+        digitalWrite(led2Pin, LOW);    // turn the LED off by making the voltage LOW
+        digitalWrite(led3Pin, HIGH);   // turn the LED on (HIGH is the voltage level)
+     delay(1000);         // wait for a second
+        if(state==LOW)return;
+        digitalWrite(led3Pin, LOW);    // turn the LED off by making the voltage LOW
+        digitalWrite(led4Pin, HIGH);   // turn the LED on (HIGH is the voltage level)
+     delay(1000);         // wait for a second
+         if(state==LOW)return; //returns back to the top of the main loop
+        digitalWrite(led4Pin, LOW);    // turn the LED off by making the voltage LOW 
+  }
+
+        //loop for remote to turn on songs
+  if (irrecv.decode(&results)){
+    //each switch created for each different button on the remote 
+   // Iterate through both arrays
+  // Notice how the iteration variable thisNote is created in the parenthesis
+  // The for loop stops when it is equal to the size of the melody array
+    
+    //pacman theme song
+    switch(results.value){
+      case 0xFF7A85: //keypad 3
+      //plays the notes and tempo from set up
+      //each switch is set up the same for the songs
+     for (int thisNote = 0; thisNote <pacsongLength; thisNote++) {
+     // determine the duration of the notes that the computer understands
+    // divide 1000 by the value, so the first note lasts for 1000/8 milliseconds
+        int duration = 1000 / pactemp[thisNote];
+        digitalWrite(bluePin, HIGH);//turns on LED
+        tone(8, pacman[thisNote], duration);
+        // pause between notes
+        int pause = duration * 1.5;
+        delay(pause);
+        digitalWrite (bluePin, LOW);//turns off LED
+        //stops the tone
+        noTone(8);     
+    } 
+    }
+    
+    //in the jungle song
+    switch(results.value){
+      case 0XFF6897: //keypad 0
+      for (int thisNote = 0; thisNote <jsongLength; thisNote++) {
+        int duration = 1000 / jungletemp[thisNote];
+        digitalWrite (greenPin, HIGH);//turns on LED
+        tone(8, jungle[thisNote], duration);
+        int pause = duration * 1.5;
+        delay(pause);
+        digitalWrite (greenPin, LOW);//turns off LED
+        noTone(8);   
+    }
+    }
+
+    //pink panther theme song
+    switch(results.value){
+      case 0xFF38C7: //keypad 5
+       for (int thisNote = 0; thisNote <psongLength; thisNote++) {
+        int duration = 1000 / pinktemp[thisNote];
+        digitalWrite(redPin, HIGH);//turns on LED
+        tone(8, pinkpan[thisNote], duration);
+        int pause = duration * 1.5;
+        delay(pause);
+        digitalWrite(redPin, LOW);//turns of LED
+        noTone(8);
+       }
+    }
+
+    //mii theme song
+    switch(results.value){
+      case 0xFF5AA5: //keypad 6
+      for (int thisNote = 0; thisNote <misongLength; thisNote++) {
+        int duration = 1000 / miitemp[thisNote];
+        digitalWrite (bluePin, HIGH);//turns on LED
+        digitalWrite (greenPin, HIGH);//turns on LED
+        digitalWrite (redPin, HIGH);//turns on LED
+        tone(8, miitheme[thisNote], duration);
+        int pause = duration * 1.5;
+        delay(pause);
+         digitalWrite (bluePin, LOW);//turns off LED
+        digitalWrite (greenPin, LOW);//turns off LED
+        digitalWrite (redPin, LOW);//turns off LED
+        noTone(8);
+      }
+      
+    }
+
+   //harry potter theme song
+    switch(results.value){
+      case 0xFF42BD: //keypad 7
+      for( int thisNote = 0; thisNote < hsongLength; thisNote++) {
+        int duration = 1000 / harrytemp[thisNote];
+        digitalWrite (redPin, HIGH);//turns on LED
+        digitalWrite (bluePin, HIGH);//turns on LED
+        tone(8, HarryPotter[thisNote], duration);
+        int pause = duration * 1.5;
+        delay(pause);
+        digitalWrite (redPin, LOW);//turns on LED
+        digitalWrite (bluePin, LOW);//turns on LED
+        noTone(8);
+      }
+    }
+
+    //Cantina starwars
+    switch(results.value){
+      case 0xFF4AB5: //keypad 8
+      for (int thisNote = 0; thisNote < csongLength; thisNote++) {
+        int duration = 1000 / cantemp[thisNote];
+        tone(8,cantina[thisNote], duration);
+        int pause = duration * 1.5;
+        delay(pause);
+        noTone(8);
+      }
+    }
+    
+  //starwars theme song
+       switch(results.value){
+      case 0xFF52AD: //keypad 9
+      for (int thisNote = 0; thisNote < ssongLength; thisNote++) {
+        int duration = 1000 / startemp[thisNote];
+        digitalWrite (greenPin, HIGH);//turns on LED
+        digitalWrite (bluePin, HIGH);//turns on LED
+        tone(8, starwars[thisNote], duration);
+        int pause = duration * 1.6;
+        delay(pause);
+        digitalWrite (greenPin, LOW);//turns off LED
+        digitalWrite (bluePin, LOW);//turns off LED
+        noTone(8);
+      }
+    }
+      //turns on green LED
+       switch(results.value){
+          case 0xFF18E7: //Keypad button 2
+          digitalWrite(greenPin, HIGH);
+          delay(2000);
+          digitalWrite(greenPin, LOW);
+          }
+
+       //mario theme song
+        switch(results.value){
+          case  0xFF30CF: //Keypad button 1
+       for (int thisNote = 0; thisNote < msongLength; thisNote++) {
+        int duration = 1000 / mariotemp[thisNote];
+        digitalWrite (redPin, HIGH);//turns on LED
+        digitalWrite (greenPin, HIGH);//turns on LED
+        tone (8, mario[thisNote], duration);
+        int pause = duration * 1.5;
+        delay (pause);
+        digitalWrite (redPin, LOW);//turns off LED
+        digitalWrite (greenPin, LOW);//turns off LED
+        noTone(8);
+       }
+          }
+
+ //take on me song
+  switch(results.value){
+          case 0xFF10EF: //Keypad button 4
+  for (int thisNote = 0; thisNote < songLength; thisNote++){
+    int duration = 1000/ durations[thisNote];
+    digitalWrite (redPin, HIGH);//turns on LED
+    tone(8, melody[thisNote], duration);
+    int pause = duration * 1.3;
+    delay(pause);
+    digitalWrite (redPin, LOW);//turns off LED
+    noTone(8);
+  }
+  }
+ 
+  irrecv.resume();}
+} 
